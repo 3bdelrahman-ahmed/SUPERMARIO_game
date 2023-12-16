@@ -130,6 +130,12 @@
   <ItemGroup>
     <ClCompile Include="SUPERMARIO_game.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SOIL.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\Desktop\super_mario_github\SuperMarioClone\Texture\Mario\mario.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
