@@ -8,6 +8,8 @@
 #include "../Header files/types.h"
 using namespace std;
 float M_PI = 3.14159265358979323846;
+int helthBarLevel = 0;
+
 color createColor(float r, float g , float b) {
     color c;
     c.red = r / 255;
@@ -19,6 +21,13 @@ color createColor(float r, float g , float b) {
 color mainBg = createColor(107.0f, 140.0f, 255.0f);
 color floorColorPrimary = createColor(230.0f, 90.0f, 15.0f);
 color floorColorSecondary = createColor(255.0f, 165.0f, 66.0f);
+color green = createColor(13.0f , 180.0f , 14.0f);
+color grey = createColor(54.0f, 54.0f, 54.0f);
+color yellow = createColor(219.0f , 216.0f , 14.0f);
+color red = createColor(254.0f, 8.0f, 8.0f);
+color healthBar[] = {green , yellow , red};
+
+character mainCharacter;
 
 deque <block> blocks1;
 deque <block> blocks2;
@@ -98,6 +107,23 @@ void drawBlindfold() {
     glPopMatrix();
 }
 
+void drawHealthBar() {
+    glBegin(GL_POLYGON);
+    glColor3f(grey.red, grey.green, grey.blue);
+    glVertex2f(580.0f, 550.0f);//a
+    glVertex2f(780.0f, 550.0f);//b
+    glVertex2f(780.0f, 570.0f);//c
+    glVertex2f(580.0f, 570.0f);//d
+    glEnd();
+    // character health
+    glBegin(GL_POLYGON);
+    glColor3f(healthBar[helthBarLevel].red, healthBar[helthBarLevel].green, healthBar[helthBarLevel].blue);
+    glVertex2f(580.0f, 550.0f);//a
+    glVertex2f(580.0f + mainCharacter.helath, 550.0f);//b
+    glVertex2f(580.0f + mainCharacter.helath, 570.0f);//c
+    glVertex2f(580.0f, 570.0f);//d
+    glEnd();
+}
 
 
 void drawChracter() {
@@ -196,6 +222,7 @@ void startGame() {
     createFloor();
     displayFloor();
     drawChracter();
+    drawHealthBar();
 }
 void update(){}
 void moveFunction(){}

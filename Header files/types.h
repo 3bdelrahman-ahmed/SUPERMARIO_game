@@ -16,3 +16,7 @@ struct block {
     point topRight;
     point bottomRight;
 };
+
+struct character {
+    float helath = 200;
+};
