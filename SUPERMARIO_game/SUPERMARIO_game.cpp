@@ -4,9 +4,10 @@
 #include <iostream>
 #include <glut.h>
 #include <deque>
+#include<cmath>
 #include "../Header files/types.h"
 using namespace std;
-
+float M_PI = 3.14159265358979323846;
 color createColor(float r, float g , float b) {
     color c;
     c.red = r / 255;
@@ -22,24 +23,89 @@ color floorColorSecondary = createColor(255.0f, 165.0f, 66.0f);
 deque <block> blocks1;
 deque <block> blocks2;
 
-void drawLegLeft() {
-    glBegin(GL_POLYGON);
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex2f(50.0, 50.0);
-    glVertex2f(60.0, 50.0);
-    glVertex2f(60.0f, 100.0);
-    glVertex2f(50.0, 100.0);
-    glEnd();
-}
-void drawChracter() {
+
+void drawLegs() {
+    // left leg
     glBegin(GL_POLYGON);
     glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex2f(50.0,50.0);
-    glVertex2f(100.0, 50.0);
-    glVertex2f(100.0f, 100.0);
-    glVertex2f(50.0, 100.0);
+    glVertex2f(55.0,50.0);//a
+    glVertex2f(72.0,50.0);//b
+    glVertex2f(72.0,70.0);//c
+    glVertex2f(55.0,70.0);//d
     glEnd();
-    drawLegLeft();
+    // right leg
+    glBegin(GL_POLYGON);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex2f(80.0, 50.0);//a
+    glVertex2f(97.0, 50.0);//b
+    glVertex2f(97.0, 70.0);//c
+    glVertex2f(80.0, 70.0);//d
+    glEnd();
+}
+
+void drawCircle(float radius, int segments, float x,float y,float xColor,float yColor,float zColor) {
+    glPushMatrix();
+    glTranslated(x, y, 0.0);
+    glBegin(GL_POLYGON);
+    glColor3f(xColor, yColor, zColor);
+    for (int i = 0; i < segments; ++i) {
+        float theta = static_cast<float>(i) / segments * (2.0 * M_PI);
+        float x = radius * cos(theta);
+        float y = radius * sin(theta);
+        glVertex2f(x, y);
+    }
+
+    glEnd();
+    glPopMatrix();
+}
+
+void drawBody() {
+    glBegin(GL_POLYGON);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex2f(50.0f,70.0f);//a
+    glVertex2f(100.0f,70.0f);//b
+    glVertex2f(115.0f, 85.0f);//c
+    glVertex2f(115.0f,115.0f);//d
+    glVertex2f(100.0f,130.0f);//e
+    glVertex2f(50.0f,130.0f);//f
+    glVertex2f(35.0f,115.0f);//g
+    glVertex2f(35.0f,85.0f);//h
+    glEnd();
+    drawCircle(15.0, 100.0, 49.5f, 115.5f, 1.0, 0.0, 0.0); // top left
+    drawCircle(15.0,100.0,100.5f,115.5f, 1.0, 0.0, 0.0);// top right
+    drawCircle(15.0,100.0,50.5,85.5, 1.0, 0.0, 0.0);// bottom left
+    drawCircle(15.0, 100.0, 100, 84.5,1.0,0.0,0.0);// bottom right
+
+}
+
+void drawEyes() {
+    drawCircle(11.65, 100.0, 75.0, 108.0, 1.0, 1.0, 1.0);
+    drawCircle(11.65, 100.0, 97.0, 108.0, 1.0, 1.0, 1.0);
+    drawCircle(5.5,100.0,75.0,108.0,0.0,0.0,0.0);
+    drawCircle(5.5, 100.0, 97.0, 108.0, 0.0, 0.0, 0.0);
+}
+
+void drawBlindfold() {
+    glPushMatrix();
+    glTranslated(5,5,0.0);
+    glBegin(GL_POLYGON);
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex2f(28.0,105.0);//a
+    glVertex2f(112.0,105.0);//b
+    glVertex2f(108.5,120.0);//c
+    glVertex2f(30.0,120.0);//d
+    glEnd();
+    glPopMatrix();
+}
+
+
+
+void drawChracter() {
+    drawBody();
+    drawEyes();
+    drawBlindfold();
+    drawLegs();
+
 }
 point createPoint(float x , float y) {
     point newPoint;
@@ -125,11 +191,11 @@ void updateBlocks(int isPositive) {
         i++;
     }
 }
+
 void startGame() {
     createFloor();
     displayFloor();
     drawChracter();
-
 }
 void update(){}
 void moveFunction(){}
