@@ -20,3 +20,8 @@ struct block {
 struct character {
     float helath = 200;
 };
+
+struct coin {
+    float x;
+    float y;
+};

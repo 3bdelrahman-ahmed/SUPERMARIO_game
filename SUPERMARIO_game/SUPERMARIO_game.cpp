@@ -25,6 +25,8 @@ color green = createColor(13.0f , 180.0f , 14.0f);
 color grey = createColor(54.0f, 54.0f, 54.0f);
 color yellow = createColor(219.0f , 216.0f , 14.0f);
 color red = createColor(254.0f, 8.0f, 8.0f);
+color coinColorPrimary = createColor(255.0f, 200.0f, 60.0f);
+color coinColorSecondary = createColor(240.0f, 142.0f, 9.0f);
 color healthBar[] = {green , yellow , red};
 
 character mainCharacter;
@@ -233,12 +235,29 @@ void updateBlocks(int isPositive) {
     }
 }
 
+coin createCoin(float x, float y) {
+    coin newCoin;
+    newCoin.x = x;
+    newCoin.y = y;
+    return newCoin;
+}
+
+void showCoin(float x, float y) {
+    glPushMatrix();
+    glTranslated(x, y, 0.0);
+    drawCircle(32.0f, 100, 0, 0, coinColorPrimary.red, coinColorPrimary.green, coinColorPrimary.blue);
+    drawCircle(25.0f, 100, 0, 0, coinColorSecondary.red, coinColorSecondary.green, coinColorSecondary.blue);
+    drawCircle(15.0f, 100, 0, 0, coinColorPrimary.red, coinColorPrimary.green, coinColorPrimary.blue);
+    glPopMatrix();
+}
+
 void startGame() {
     createFloor();
     displayFloor();
     drawChracter();
     drawHealthBar();
     drawClould(0,0);
+    showCoin(100.0f, 200.0f);
 }
 void update(){}
 void moveFunction(){}
