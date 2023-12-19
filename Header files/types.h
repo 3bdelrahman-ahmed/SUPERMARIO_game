@@ -19,9 +19,17 @@ struct block {
 
 struct character {
     float helath = 200;
+    float y = 50;
+    bool isJumping = 0;
 };
 
 struct coin {
     float x;
     float y;
+};
+
+struct obstacle {
+    float x = 850;
+    float y;
+    bool isShape1 = 1;
 };

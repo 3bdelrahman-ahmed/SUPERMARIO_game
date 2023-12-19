@@ -5,11 +5,13 @@
 #include <glut.h>
 #include <deque>
 #include<cmath>
+#include <algorithm>
+
 #include "../Header files/types.h"
 using namespace std;
 float M_PI = 3.14159265358979323846;
 int helthBarLevel = 0;
-
+float cloudPos = 590;
 color createColor(float r, float g , float b) {
     color c;
     c.red = r / 255;
@@ -27,10 +29,13 @@ color yellow = createColor(219.0f , 216.0f , 14.0f);
 color red = createColor(254.0f, 8.0f, 8.0f);
 color coinColorPrimary = createColor(255.0f, 200.0f, 60.0f);
 color coinColorSecondary = createColor(240.0f, 142.0f, 9.0f);
+color obstacleBorderColor = createColor(115.0f , 75.0f , 40.0f);
+color obstaclePrimaryColor = createColor(195.0f, 152.0f, 107.0f); 
+color obstacleSecondaryColor = createColor(218, 187, 156);
 color healthBar[] = {green , yellow , red};
 
 character mainCharacter;
-
+obstacle checkObstcale;
 deque <block> blocks1;
 deque <block> blocks2;
 
@@ -69,9 +74,9 @@ void drawCircle(float radius, int segments, float x,float y,float xColor,float y
     glEnd();
     glPopMatrix();
 }
-void drawClould(float x,float y) {
+void drawCloud(float x) {
     glPushMatrix();
-    glTranslated(x, y, 0);
+    glTranslated(x, -30, 0);
     drawCircle(30.0,100.0,250.0,500.0,1.0,1.0,1.0);
     drawCircle(30.0, 100.0, 240.0, 510.0, 1.0, 1.0, 1.0);
     drawCircle(30.0, 100.0, 265.0, 510.0, 1.0, 1.0, 1.0);
@@ -142,14 +147,19 @@ void drawHealthBar() {
     glEnd();
 }
 
-
 void drawChracter() {
+    glPushMatrix();
+    glTranslated(35, mainCharacter.y , 0);
+    glPushMatrix();
+    glTranslated(-35, -50, 0);
     drawBody();
     drawEyes();
     drawBlindfold();
     drawLegs();
-
+    glPopMatrix();
+    glPopMatrix();
 }
+
 point createPoint(float x , float y) {
     point newPoint;
     newPoint.x = x;
@@ -242,6 +252,81 @@ coin createCoin(float x, float y) {
     return newCoin;
 }
 
+obstacle createObstacle(float x , float y) {
+    obstacle newObstacle;
+    newObstacle.x = x;
+    newObstacle.y = y;
+    return newObstacle;
+}
+
+void drawObstacle() {
+
+    glPushMatrix();
+    glTranslated(checkObstcale.x , 50 , 0.0);
+    if (checkObstcale.isShape1) {
+        glBegin(GL_POLYGON);
+        glColor3f(obstacleBorderColor.red, obstacleBorderColor.green, obstacleBorderColor.blue);
+        glVertex2f(0.0, 0.0);//a
+        glVertex2f(40.0, 0.0);//b
+        glVertex2f(40.0, 75.0);//c
+        glVertex2f(0.0, 75.0);//d
+        glEnd();
+        glBegin(GL_POLYGON);
+        glColor3f(obstacleBorderColor.red, obstacleBorderColor.green, obstacleBorderColor.blue);
+        glVertex2f(0.0, 75.0);//a
+        glVertex2f(40.0, 75.0);//b
+        glVertex2f(20.0, 110.0);//c
+        glEnd();
+
+
+        glBegin(GL_POLYGON);
+        glColor3f(obstacleSecondaryColor.red, obstacleSecondaryColor.green, obstacleSecondaryColor.blue);
+        glVertex2f(4, 4);//a
+        glVertex2f(36, 4);//b
+        glVertex2f(36, 75.0);//c
+        glVertex2f(4, 75.0);//d
+        glEnd();
+        glBegin(GL_POLYGON);
+        glColor3f(obstaclePrimaryColor.red, obstaclePrimaryColor.green, obstaclePrimaryColor.blue);
+        glVertex2f(4, 75);//a
+        glVertex2f(36, 75);//b
+        glVertex2f(20, 102);//c
+        glEnd();
+        glBegin(GL_POLYGON);
+        glColor3f(obstaclePrimaryColor.red, obstaclePrimaryColor.green, obstaclePrimaryColor.blue);
+        glVertex2f(10.0, 75);//a
+        glVertex2f(15, 75);//b
+        glVertex2f(12.5, 65);//c
+        glEnd();
+        glBegin(GL_POLYGON);
+        glColor3f(obstaclePrimaryColor.red, obstaclePrimaryColor.green, obstaclePrimaryColor.blue);
+        glVertex2f(25.0, 75);//a
+        glVertex2f(35.0, 75);//b
+        glVertex2f(30.0, 60);//c
+        glEnd();
+    }
+    else {
+        glBegin(GL_POLYGON);
+        glColor3f(obstacleBorderColor.red, obstacleBorderColor.green, obstacleBorderColor.blue);
+        glVertex2f(0.0, 0.0);//a
+        glVertex2f(55.0, 0.0);//b
+        glVertex2f(55.0, 55.0);//c
+        glVertex2f(0.0, 55.0);//d
+        glEnd();
+
+        glBegin(GL_POLYGON);
+        glColor3f(obstaclePrimaryColor.red, obstaclePrimaryColor.green, obstaclePrimaryColor.blue);
+        glVertex2f(5, 5);//a
+        glVertex2f(50.0, 5);//b
+        glVertex2f(50.0, 50.0);//c
+        glVertex2f(5, 50.0);//d
+        glEnd();
+        drawCircle(10, 100, 27.5, 27.5, obstacleBorderColor.red, obstacleBorderColor.green, obstacleBorderColor.blue);
+    }
+    glPopMatrix();
+
+}
+
 void showCoin(float x, float y) {
     glPushMatrix();
     glTranslated(x, y, 0.0);
@@ -254,16 +339,29 @@ void showCoin(float x, float y) {
 void startGame() {
     createFloor();
     displayFloor();
+
     drawChracter();
     drawHealthBar();
-    drawClould(0,0);
+    drawCloud(cloudPos);
     showCoin(100.0f, 200.0f);
+    drawObstacle();
 }
 void update(){}
 void moveFunction(){}
-void timer(){
+void timer(int value){
+    cloudPos -= 10;
+    if (cloudPos <= -450) cloudPos = 590;
+    if (mainCharacter.isJumping) {
+        mainCharacter.y += 10;
+        if (mainCharacter.y > 200) mainCharacter.isJumping = false;
+    }
+    else if(mainCharacter.y > 50) {
+        mainCharacter.y -= 15;
+        mainCharacter.y = max(50.0f, mainCharacter.y);
+    }
 
-   glutPostRedisplay();
+    glutPostRedisplay();
+    glutTimerFunc(75, timer, 0);		//1000 milliseconds
 }
 
 void display() {
@@ -277,6 +375,8 @@ void specFunc(int key, int x, int y) {
         switch (key)
         {
         case GLUT_KEY_RIGHT:
+            checkObstcale.x -= 15;
+            cloudPos -= 3;
             updateBlocks(-1);
             block b1 = blocks1[blocks1.size() - 1];
             block b2 = blocks2[blocks1.size() - 1];
@@ -292,7 +392,17 @@ void specFunc(int key, int x, int y) {
                 blocks1.pop_front();
                 blocks2.pop_front();
             }
+            if (checkObstcale.isShape1 && checkObstcale.x < -40) {
+                checkObstcale.x = 800;
+                checkObstcale.isShape1 = rand() % 2;
+            }
+            else if (!checkObstcale.isShape1 && checkObstcale.x < -55) {
+                checkObstcale.x = 800;
+                checkObstcale.isShape1 = rand() % 2;
+            }
             break;
+        case GLUT_KEY_UP :
+            mainCharacter.isJumping = true;
         default:
             break;
         }
@@ -308,6 +418,7 @@ int main(int argc, char** argr) {
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     glClearColor(mainBg.red, mainBg.green, mainBg.blue, 0);
     glutSpecialFunc(specFunc);
+    glutTimerFunc(0, timer, 0);
     gluOrtho2D(0.0, 800, 0.0, 600);
     glutDisplayFunc(display);
 
