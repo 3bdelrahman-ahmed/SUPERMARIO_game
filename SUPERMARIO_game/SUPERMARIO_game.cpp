@@ -67,7 +67,22 @@ void drawCircle(float radius, int segments, float x,float y,float xColor,float y
     glEnd();
     glPopMatrix();
 }
-
+void drawClould(float x,float y) {
+    glPushMatrix();
+    glTranslated(x, y, 0);
+    drawCircle(30.0,100.0,250.0,500.0,1.0,1.0,1.0);
+    drawCircle(30.0, 100.0, 240.0, 510.0, 1.0, 1.0, 1.0);
+    drawCircle(30.0, 100.0, 265.0, 510.0, 1.0, 1.0, 1.0);
+    drawCircle(30.0, 100.0, 265.0, 525.0, 1.0, 1.0, 1.0);
+    drawCircle(30.0, 100.0, 300.0, 525.0, 1.0, 1.0, 1.0);
+    drawCircle(30.0, 100.0, 300.0, 500.0, 1.0, 1.0, 1.0);
+    drawCircle(30.0, 100.0, 330.0, 525.0, 1.0, 1.0, 1.0);
+    drawCircle(30.0, 100.0, 345.0, 500.0, 1.0, 1.0, 1.0);
+    drawCircle(30.0, 100.0, 355.0, 500.0, 1.0, 1.0, 1.0);
+    drawCircle(30.0, 100.0, 360.0, 520.0, 1.0, 1.0, 1.0);
+    drawCircle(30.0, 100.0, 380.0, 510.0, 1.0, 1.0, 1.0);
+    glPopMatrix();
+}
 void drawBody() {
     glBegin(GL_POLYGON);
     glColor3f(1.0f, 0.0f, 0.0f);
@@ -223,6 +238,7 @@ void startGame() {
     displayFloor();
     drawChracter();
     drawHealthBar();
+    drawClould(0,0);
 }
 void update(){}
 void moveFunction(){}
@@ -256,23 +272,6 @@ void specFunc(int key, int x, int y) {
             if (b1.bottomRight.x < 0 && b2.bottomRight.x < 0) {
                 blocks1.pop_front();
                 blocks2.pop_front();
-            }
-            break;
-        case GLUT_KEY_LEFT:
-            updateBlocks(1);
-            block b3 = blocks1[0];
-            block b4 = blocks2[0];
-            if (b3.bottomLeft.x > 0 && b4.bottomLeft.x > 0) {
-                block newBlock = createBlock(b3.bottomLeft.x - 25, 0, !b3.IsPrimary);
-                blocks1.push_front(newBlock);
-                newBlock = createBlock(b4.bottomLeft.x - 25, 25, !b4.IsPrimary);
-                blocks2.push_front(newBlock);
-            }
-            b3 = blocks1[blocks1.size() - 1];
-            b4 = blocks2[blocks2.size() - 1];
-            if (b3.bottomLeft.x > 800  && b4.bottomLeft.x > 800) {
-                blocks1.pop_back();
-                blocks2.pop_back();
             }
             break;
         default:
