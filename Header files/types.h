@@ -21,6 +21,7 @@ struct character {
     float helath = 200;
     float y = 50;
     bool isJumping = 0;
+    bool isCrashed = false;
 };
 
 struct coin {

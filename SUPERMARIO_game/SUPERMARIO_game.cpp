@@ -285,9 +285,10 @@ void drawObstacle() {
         glColor3f(obstacleBorderColor.red, obstacleBorderColor.green, obstacleBorderColor.blue);
         glVertex2f(0.0, 75.0);//a
         glVertex2f(40.0, 75.0);//b
-        glVertex2f(20.0, 110.0);//c
+        glVertex2f(40.0, 110.0);//c
+        glVertex2f(0.0,110.0);//d
         glEnd();
-
+        
 
         glBegin(GL_POLYGON);
         glColor3f(obstacleSecondaryColor.red, obstacleSecondaryColor.green, obstacleSecondaryColor.blue);
@@ -300,7 +301,8 @@ void drawObstacle() {
         glColor3f(obstaclePrimaryColor.red, obstaclePrimaryColor.green, obstaclePrimaryColor.blue);
         glVertex2f(4, 75);//a
         glVertex2f(36, 75);//b
-        glVertex2f(20, 102);//c
+        glVertex2f(36, 106);//c
+        glVertex2f(4,106.0);//d
         glEnd();
         glBegin(GL_POLYGON);
         glColor3f(obstaclePrimaryColor.red, obstaclePrimaryColor.green, obstaclePrimaryColor.blue);
@@ -357,21 +359,31 @@ void startGame() {
     if(!mainCoin.isCollected)
         showCoin(mainCoin.x, mainCoin.y);
 }
+
+void handleCrash() {
+    // 150
+    // 115 -5
+    if (!mainCharacter.isCrashed && checkObstcale.isShape1 && mainCharacter.y < 160 && checkObstcale.x < 115 && checkObstcale.x > -5) {
+        cout << "crashed!!!!!!!\n";
+        mainCharacter.isCrashed = true;
+    }
+}
+
 void update(){}
 void moveFunction(){}
 void timer(int value){
-    handleCollectCoin();
     cloudPos -= 10;
     if (cloudPos <= -450) cloudPos = 590;
     if (mainCharacter.isJumping) {
         mainCharacter.y += 10;
-        if (mainCharacter.y > 200) mainCharacter.isJumping = false;
+        if (mainCharacter.y > 250) mainCharacter.isJumping = false;
     }
     else if(mainCharacter.y > 50) {
         mainCharacter.y -= 15;
         mainCharacter.y = max(50.0f, mainCharacter.y);
     }
-
+    handleCollectCoin();
+    handleCrash();
     glutPostRedisplay();
     glutTimerFunc(75, timer, 0);		//1000 milliseconds
 }
@@ -387,8 +399,8 @@ void specFunc(int key, int x, int y) {
         switch (key)
         {
         case GLUT_KEY_RIGHT:
-            handleCollectCoin();
             checkObstcale.x -= 15;
+            cout << checkObstcale.x << endl;
             mainCoin.x -= 15;
             cloudPos -= 3;
             updateBlocks(-1);
@@ -407,17 +419,20 @@ void specFunc(int key, int x, int y) {
                 blocks2.pop_front();
             }
 
-
+            handleCrash();
+            handleCollectCoin();
             if (mainCoin.x < -40) {
                 mainCoin.x = checkObstcale.x + 250;
                 mainCoin.isCollected = false;
             }
 
             if (checkObstcale.isShape1 && checkObstcale.x < -40) {
+                mainCharacter.isCrashed = false;
                 checkObstcale.x = 800;
                 checkObstcale.isShape1 = rand() % 2;
             }
             else if (!checkObstcale.isShape1 && checkObstcale.x < -55) {
+                mainCharacter.isCrashed = false;
                 checkObstcale.x = 800;
                 checkObstcale.isShape1 = rand() % 2;
             }
