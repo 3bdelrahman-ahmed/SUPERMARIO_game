@@ -26,6 +26,7 @@ struct character {
 struct coin {
     float x;
     float y;
+    bool isCollected = false;
 };
 
 struct obstacle {

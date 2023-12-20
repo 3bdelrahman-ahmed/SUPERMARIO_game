@@ -12,6 +12,8 @@ using namespace std;
 float M_PI = 3.14159265358979323846;
 int helthBarLevel = 0;
 float cloudPos = 590;
+int score = 0;
+
 color createColor(float r, float g , float b) {
     color c;
     c.red = r / 255;
@@ -19,6 +21,14 @@ color createColor(float r, float g , float b) {
     c.blue = b / 255;
     return c;
 }
+
+coin createCoin(float x, float y) {
+    coin newCoin;
+    newCoin.x = x;
+    newCoin.y = y;
+    return newCoin;
+}
+coin mainCoin = createCoin(1100.0f , 100.0f );
 
 color mainBg = createColor(107.0f, 140.0f, 255.0f);
 color floorColorPrimary = createColor(230.0f, 90.0f, 15.0f);
@@ -107,6 +117,13 @@ void drawBody() {
     drawCircle(15.0,100.0,50.5,85.5, 1.0, 0.0, 0.0);// bottom left
     drawCircle(15.0, 100.0, 100, 84.5,1.0,0.0,0.0);// bottom right
 
+}
+
+void handleCollectCoin() {
+    if (mainCoin.x < 160 && mainCoin.x > 20 && mainCharacter.y <= 130 && !mainCoin.isCollected) {
+        score += 10;
+        mainCoin.isCollected = true;
+    }
 }
 
 void drawEyes() {
@@ -245,13 +262,6 @@ void updateBlocks(int isPositive) {
     }
 }
 
-coin createCoin(float x, float y) {
-    coin newCoin;
-    newCoin.x = x;
-    newCoin.y = y;
-    return newCoin;
-}
-
 obstacle createObstacle(float x , float y) {
     obstacle newObstacle;
     newObstacle.x = x;
@@ -343,12 +353,14 @@ void startGame() {
     drawChracter();
     drawHealthBar();
     drawCloud(cloudPos);
-    showCoin(100.0f, 200.0f);
     drawObstacle();
+    if(!mainCoin.isCollected)
+        showCoin(mainCoin.x, mainCoin.y);
 }
 void update(){}
 void moveFunction(){}
 void timer(int value){
+    handleCollectCoin();
     cloudPos -= 10;
     if (cloudPos <= -450) cloudPos = 590;
     if (mainCharacter.isJumping) {
@@ -375,7 +387,9 @@ void specFunc(int key, int x, int y) {
         switch (key)
         {
         case GLUT_KEY_RIGHT:
+            handleCollectCoin();
             checkObstcale.x -= 15;
+            mainCoin.x -= 15;
             cloudPos -= 3;
             updateBlocks(-1);
             block b1 = blocks1[blocks1.size() - 1];
@@ -392,6 +406,13 @@ void specFunc(int key, int x, int y) {
                 blocks1.pop_front();
                 blocks2.pop_front();
             }
+
+
+            if (mainCoin.x < -40) {
+                mainCoin.x = checkObstcale.x + 250;
+                mainCoin.isCollected = false;
+            }
+
             if (checkObstcale.isShape1 && checkObstcale.x < -40) {
                 checkObstcale.x = 800;
                 checkObstcale.isShape1 = rand() % 2;
