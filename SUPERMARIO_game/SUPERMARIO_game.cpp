@@ -120,7 +120,7 @@ void drawBody() {
 }
 
 void handleCollectCoin() {
-    if (mainCoin.x < 160 && mainCoin.x > 20 && mainCharacter.y <= 130 && !mainCoin.isCollected) {
+    if (mainCoin.x < 160 && mainCoin.x > 0 && mainCharacter.y <= 130 && !mainCoin.isCollected) {
         score += 10;
         mainCoin.isCollected = true;
     }
@@ -412,7 +412,7 @@ void specFunc(int key, int x, int y) {
         {
         case GLUT_KEY_RIGHT:
             checkObstcale.x -= 15;
-            cout << checkObstcale.x << endl;
+            //cout << checkObstcale.x << endl;
             mainCoin.x -= 15;
             cloudPos -= 3;
             updateBlocks(-1);
