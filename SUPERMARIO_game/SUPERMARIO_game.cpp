@@ -10,7 +10,7 @@
 #include "../Header files/types.h"
 using namespace std;
 float M_PI = 3.14159265358979323846;
-int helthBarLevel = 0;
+int healthBarLevel = 0;
 float cloudPos = 590;
 int score = 0;
 
@@ -156,7 +156,7 @@ void drawHealthBar() {
     glEnd();
     // character health
     glBegin(GL_POLYGON);
-    glColor3f(healthBar[helthBarLevel].red, healthBar[helthBarLevel].green, healthBar[helthBarLevel].blue);
+    glColor3f(healthBar[healthBarLevel].red, healthBar[healthBarLevel].green, healthBar[healthBarLevel].blue);
     glVertex2f(580.0f, 550.0f);//a
     glVertex2f(580.0f + mainCharacter.helath, 550.0f);//b
     glVertex2f(580.0f + mainCharacter.helath, 570.0f);//c
@@ -361,12 +361,24 @@ void startGame() {
 }
 
 void handleCrash() {
-    // 150
-    // 115 -5
-    if (!mainCharacter.isCrashed && checkObstcale.isShape1 && mainCharacter.y < 160 && checkObstcale.x < 115 && checkObstcale.x > -5) {
-        cout << "crashed!!!!!!!\n";
+    if (!mainCharacter.isCrashed && checkObstcale.isShape1 && mainCharacter.y < 160 && mainCharacter.y > 140 && checkObstcale.x < 97 && checkObstcale.x > 15) {
+        mainCharacter.helath -= 20;
         mainCharacter.isCrashed = true;
     }
+    else if (!mainCharacter.isCrashed && checkObstcale.isShape1 && mainCharacter.y <= 140 && checkObstcale.x < 115 && checkObstcale.x > -5) {
+        mainCharacter.helath -= 20;
+        mainCharacter.isCrashed = true;
+    }
+    else if (!mainCharacter.isCrashed && !checkObstcale.isShape1 && mainCharacter.y < 105 && mainCharacter.y > 85 && checkObstcale.x < 97 && checkObstcale.x > 0) {
+        mainCharacter.helath -= 20;
+        mainCharacter.isCrashed = true;
+    }
+    else if (!mainCharacter.isCrashed && !checkObstcale.isShape1 && mainCharacter.y <= 85 && checkObstcale.x < 115 && checkObstcale.x > -20) {
+        mainCharacter.helath -= 20;
+        mainCharacter.isCrashed = true;
+    }
+    if (mainCharacter.helath <= 100 && mainCharacter.helath > 50) healthBarLevel = 1;
+    else if (mainCharacter.helath <= 50) healthBarLevel = 2;
 }
 
 void update(){}
@@ -385,7 +397,7 @@ void timer(int value){
     handleCollectCoin();
     handleCrash();
     glutPostRedisplay();
-    glutTimerFunc(75, timer, 0);		//1000 milliseconds
+    glutTimerFunc(75, timer, 0);		//75 milliseconds
 }
 
 void display() {
