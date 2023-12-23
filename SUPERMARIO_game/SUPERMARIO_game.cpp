@@ -13,8 +13,7 @@ float M_PI = 3.14159265358979323846;
 int healthBarLevel = 0;
 float cloudPos = 590;
 int score = 0;
-bool isGameWin = false;
-
+bool isGameStarted = false;
 
 color createColor(float r, float g , float b) {
     color c;
@@ -62,6 +61,31 @@ void renderGameWin() {
         }
     }
 }
+
+void renderGameOver() {
+    glColor3f(red.red, red.green ,red.blue); // Green color for win text
+    glRasterPos2f(300, 350);
+    string winMessage = "Game Over *_* ! Press R To Play Again";
+    for (auto c : winMessage) {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
+        if (c == '!') {
+            glRasterPos2f(230, 300); // Set new line position
+        }
+    }
+}
+
+void renderStartGame() {
+    glColor3f(red.red, red.green, red.blue);
+    glRasterPos2f(300, 350);
+    string Hello = "Hello ! Press S To Play";
+    for (auto c : Hello) {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
+        if (c == '!') {
+            glRasterPos2f(230, 300); // Set new line position
+        }
+    }
+}
+
 
 void renderText(const string& text) {
     glPushMatrix();
@@ -146,7 +170,7 @@ void drawBody() {
 
 void handleCollectCoin() {
     if (mainCoin.x < 160 && mainCoin.x > 0 && mainCharacter.y <= 130 && !mainCoin.isCollected) {
-        score += 10;
+        score += 1;
         mainCoin.isCollected = true;
     }
 }
@@ -442,26 +466,48 @@ void timer(int value){
 //    glFlush(); // Force execution of GL commands in finite time
 //}
 
+void resetGame() {
+    mainCharacter.y = 50;
+    mainCharacter.isJumping = false;
+    mainCharacter.helath = 200;
+    blocks1.clear();
+    blocks2.clear();
+    score = 0;
+    mainCoin = createCoin(1100.0f, 100.0f);
+    healthBarLevel = 0;
+    cloudPos = 590;
+    checkObstcale.x = 850;
+    checkObstcale.isShape1 = true;
+    mainCharacter.isCrashed = false;
+}
+
 void display() {
    
     glClear(GL_COLOR_BUFFER_BIT);
-
-    // Display game elements
-    startGame();
-
-    // Check game state
-    if (score >= 10) {
-        renderGameWin();
-        glFlush(); // Force execution of GL commands in finite time
+    if (isGameStarted) {
+        // Check game state
+        if (score == 10) {
+            renderGameWin();
+            glFlush(); // Force execution of GL commands in finite time
+        }
+        else if (mainCharacter.helath <= 0) {
+            renderGameOver();
+            glFlush();
+        }
+        else {
+            startGame();
+            glFlush(); // Force execution of GL commands in finite time
+        }
     }
     else {
-        startGame();
-        glFlush(); // Force execution of GL commands in finite time
+        renderStartGame();
+        glFlush();
     }
 
     glutSwapBuffers();
 }
 void specFunc(int key, int x, int y) {
+    if (mainCharacter.helath > 0 && score < 10) {
         switch (key)
         {
         case GLUT_KEY_RIGHT:
@@ -503,12 +549,37 @@ void specFunc(int key, int x, int y) {
                 checkObstcale.isShape1 = rand() % 2;
             }
             break;
-        case GLUT_KEY_UP :
+        case GLUT_KEY_UP:
             mainCharacter.isJumping = true;
         default:
             break;
         }
+        }
         glutPostRedisplay();
+}
+
+void my_keyboard(unsigned char key, int x, int y) {
+    if ((mainCharacter.helath <= 0 || score == 10) && isGameStarted) {
+        switch (key) {
+        case 'r':
+            resetGame();
+            break;
+        default:
+            break;
+        }
+        glutPostRedisplay();
+    }
+    else if (!isGameStarted) {
+        switch (key) {
+        case 's':
+            isGameStarted = true;
+            resetGame();
+            break;
+        default:
+            break;
+        }
+        glutPostRedisplay();
+    }
 }
 
 int main(int argc, char** argr) {
@@ -520,6 +591,7 @@ int main(int argc, char** argr) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glClearColor(mainBg.red, mainBg.green, mainBg.blue, 0);
     glutSpecialFunc(specFunc);
+    glutKeyboardFunc(my_keyboard);
     glutTimerFunc(0, timer, 0);
     gluOrtho2D(0.0, 800, 0.0, 600);
     glutDisplayFunc(display);
