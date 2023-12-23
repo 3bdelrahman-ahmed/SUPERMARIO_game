@@ -6,13 +6,15 @@
 #include <deque>
 #include<cmath>
 #include <algorithm>
-
+#include<sstream>
 #include "../Header files/types.h"
 using namespace std;
 float M_PI = 3.14159265358979323846;
 int healthBarLevel = 0;
 float cloudPos = 590;
 int score = 0;
+bool isGameWin = false;
+
 
 color createColor(float r, float g , float b) {
     color c;
@@ -49,6 +51,29 @@ obstacle checkObstcale;
 deque <block> blocks1;
 deque <block> blocks2;
 
+void renderGameWin() {
+    glColor3f(0.0, 1.0, 0.0); // Green color for win text
+    glRasterPos2f(300, 350);
+    string winMessage = "You Win! Press R To Play Again";
+    for (auto c : winMessage) {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
+        if (c == '!') {
+            glRasterPos2f(230, 300); // Set new line position
+        }
+    }
+}
+
+void renderText(const string& text) {
+    glPushMatrix();
+
+    glRasterPos2f(100, 550);
+
+    for (char character : text) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
+    }
+
+    glPopMatrix();
+}
 
 void drawLegs() {
     // left leg
@@ -125,6 +150,7 @@ void handleCollectCoin() {
         mainCoin.isCollected = true;
     }
 }
+
 
 void drawEyes() {
     drawCircle(11.65, 100.0, 75.0, 108.0, 1.0, 1.0, 1.0);
@@ -346,6 +372,13 @@ void showCoin(float x, float y) {
     drawCircle(25.0f, 100, 0, 0, coinColorSecondary.red, coinColorSecondary.green, coinColorSecondary.blue);
     drawCircle(15.0f, 100, 0, 0, coinColorPrimary.red, coinColorPrimary.green, coinColorPrimary.blue);
     glPopMatrix();
+
+    glPushMatrix();
+    glTranslated(80, 557, 0);
+    drawCircle(10.0f, 100, 0, 0, coinColorPrimary.red, coinColorPrimary.green, coinColorPrimary.blue);
+    drawCircle(7, 100, 0, 0, coinColorSecondary.red, coinColorSecondary.green, coinColorSecondary.blue);
+    drawCircle(3, 100, 0, 0, coinColorPrimary.red, coinColorPrimary.green, coinColorPrimary.blue);
+    glPopMatrix();
 }
 
 void startGame() {
@@ -358,6 +391,10 @@ void startGame() {
     drawObstacle();
     if(!mainCoin.isCollected)
         showCoin(mainCoin.x, mainCoin.y);
+    stringstream scoreText;
+    scoreText << "SCORE : " << score;
+    renderText(scoreText.str());
+    glutSwapBuffers();
 }
 
 void handleCrash() {
@@ -381,8 +418,7 @@ void handleCrash() {
     else if (mainCharacter.helath <= 50) healthBarLevel = 2;
 }
 
-void update(){}
-void moveFunction(){}
+
 void timer(int value){
     cloudPos -= 10;
     if (cloudPos <= -450) cloudPos = 590;
@@ -400,13 +436,31 @@ void timer(int value){
     glutTimerFunc(75, timer, 0);		//75 milliseconds
 }
 
+//void display() {
+//    glClear(GL_COLOR_BUFFER_BIT); // Clear the color buffer
+//    startGame();
+//    glFlush(); // Force execution of GL commands in finite time
+//}
+
 void display() {
-    glClear(GL_COLOR_BUFFER_BIT); // Clear the color buffer
+   
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // Display game elements
     startGame();
-    glFlush(); // Force execution of GL commands in finite time
+
+    // Check game state
+    if (score >= 10) {
+        renderGameWin();
+        glFlush(); // Force execution of GL commands in finite time
+    }
+    else {
+        startGame();
+        glFlush(); // Force execution of GL commands in finite time
+    }
+
+    glutSwapBuffers();
 }
-
-
 void specFunc(int key, int x, int y) {
         switch (key)
         {
@@ -463,7 +517,7 @@ int main(int argc, char** argr) {
     glutInitWindowPosition(0, 0);
     glutInitWindowSize(800, 600);
     glutCreateWindow("Super_Mario_game");
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glClearColor(mainBg.red, mainBg.green, mainBg.blue, 0);
     glutSpecialFunc(specFunc);
     glutTimerFunc(0, timer, 0);
